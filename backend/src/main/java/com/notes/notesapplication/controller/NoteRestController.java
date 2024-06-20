@@ -47,16 +47,8 @@ public class NoteRestController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        try {
-            this.noteService.deleteById(id);
-            if (this.noteService.findById(id).isEmpty()) {
-                return ResponseEntity.ok().build();
-            } else {
-                return ResponseEntity.badRequest().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        this.noteService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

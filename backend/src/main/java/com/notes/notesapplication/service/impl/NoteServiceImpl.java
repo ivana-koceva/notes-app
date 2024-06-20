@@ -72,6 +72,10 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public void deleteById(Long id) {
-        this.notesRepository.deleteById(id);
+        try {
+            notesRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete note with ID: " + id, e);
+        }
     }
 }
