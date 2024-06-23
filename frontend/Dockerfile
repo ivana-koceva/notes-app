@@ -1,5 +1,5 @@
 # Stage 1: Build Angular Application
-FROM --platform=$BUILDPLATFORM node:17.0.1-bullseye-slim as builder
+FROM --platform=$BUILDPLATFORM node:22-alpine3.19 as builder
 
 WORKDIR /project
 
@@ -14,13 +14,14 @@ CMD ["ng", "serve", "--host", "0.0.0.0"]
 # Stage 2: Development Environment Setup
 FROM builder as dev-envs
 
-# Install Git and other necessary packages
-RUN apt-get update && apt-get install -y --no-install-recommends git
+# Install Git and other necessary packages using apk (Alpine package manager)
+RUN apk update && \
+    apk add --no-cache git
 
 # Add user and group for development
-RUN useradd -s /bin/bash -m vscode && \
-    groupadd docker && \
-    usermod -aG docker vscode
+RUN adduser -D -s /bin/bash vscode && \
+    addgroup docker && \
+    adduser vscode docker
 
 # Install Docker tools (cli, buildx, compose)
 COPY --from=gloursdocker/docker / /
