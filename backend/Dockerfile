@@ -1,38 +1,7 @@
-FROM maven:3.8.5-eclipse-temurin-17 AS builder
-WORKDIR /workdir/server
-COPY pom.xml .
-RUN mvn dependency:go-offline
+# syntax=docker/dockerfile:1.4
 
-COPY src /workdir/server/src
-RUN mvn package -DskipTests
-
-FROM builder AS dev-envs
-RUN <<EOF
-apt-get update
-apt-get install -y --no-install-recommends git
-EOF
-
-RUN <<EOF
-useradd -s /bin/bash -m vscode
-groupadd docker
-usermod -aG docker vscode
-EOF
-# install Docker tools (cli, buildx, compose)
-COPY --from=gloursdocker/docker / /
-CMD ["mvn", "spring-boot:run"]
-
-FROM builder as prepare-production
-RUN mkdir -p target/dependency
-WORKDIR /workdir/server/target/dependency
-RUN jar -xf ../*.jar
-
-FROM eclipse-temurin:17-jre-focal
-
+FROM maven:3.8.5-eclipse-temurin-17
 EXPOSE 8080
-VOLUME /tmp
-ARG DEPENDENCY=/workdir/server/target/dependency
-COPY --from=prepare-production ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=prepare-production ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=prepare-production ${DEPENDENCY}/BOOT-INF/classes /app
-COPY --from=builder /workdir/server/target/NotesApplication-0.0.1-SNAPSHOT.jar .
-CMD ["java", "-jar", "NotesApplication-0.0.1-SNAPSHOT.jar"]
+ARG JAR_FILE=target/NotesApplication-0.0.1-SNAPSHOT.jar
+ADD ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
