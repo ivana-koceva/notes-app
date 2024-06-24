@@ -46,9 +46,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v1
+      with:
+        version: 'v1.19.7'
+
+    - name: Write kubeconfig
+      run: |
+        echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+        cat $HOME/.kube/config  # Debug: Print the kubeconfig file
+
     - name: Deploy to Kubernetes
       env:
-        KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        KUBECONFIG: $HOME/.kube/config
       run: |
+        kubectl get nodes  # Debug: Check if kubectl can connect to the cluster
         kubectl apply -f k8s/backend-deployment.yaml
         kubectl apply -f k8s/frontend-deployment.yaml
