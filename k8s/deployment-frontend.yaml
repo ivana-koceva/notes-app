@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  namespace: notes-namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: ivanakoceva/angular:latest
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: frontend-config
+              key: NODE_ENV
+        ports:
+        - containerPort: 4200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: notes-namespace
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 4300
+      targetPort: 4200
+  type: ClusterIP
