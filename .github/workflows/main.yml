@@ -37,31 +37,3 @@ jobs:
         file: ./frontend/Dockerfile
         push: true
         tags: ivanakoceva/angular:latest
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v1
-      with:
-        version: 'v1.19.7'
-
-    - name: Create .kube directory
-      run: mkdir -p $HOME/.kube
-
-    - name: Write kubeconfig
-      run: |
-        echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
-        cat $HOME/.kube/config  # Debug: Print the kubeconfig file
-    - name: Deploy to Kubernetes
-      env:
-        KUBECONFIG: $HOME/.kube/config
-      run: |
-        kubectl get nodes  # Debug: Check if kubectl can connect to the cluster
-        kubectl apply -f k8s/deployment-backend.yaml
-        kubectl apply -f k8s/deployment-frontend.yaml
