@@ -65,4 +65,3 @@ jobs:
         kubectl get nodes  # Debug: Check if kubectl can connect to the cluster
         kubectl apply -f k8s/deployment-backend.yaml
         kubectl apply -f k8s/deployment-frontend.yaml
-        tags: ivanakoceva/angular:latest
