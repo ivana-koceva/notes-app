@@ -4,6 +4,6 @@ metadata:
   name: backend-config
   namespace: notes-namespace
 data:
-  SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/notes
+  SPRING_DATASOURCE_URL: jdbc:postgresql://db-service:5432/notes
   SPRING_DATASOURCE_USERNAME: postgres
   SPRING_JPA_HIBERNATE_DDL_AUTO: update
